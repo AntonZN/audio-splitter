@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+  db:
+    image: postgres:13
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  db_backup:
+    image: postgres:13
+    env_file:
+      - .env
+    command: sh -c 'pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB > /backups/backup_$(date +%Y-%m-%d_%H-%M-%S).sql'
+    volumes:
+      - ./db_backups:/backups
+    depends_on:
+      - db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - app_storage:/storage
+    depends_on:
+      - db
+      - rabbitmq
+    env_file:
+      - .env
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+      - app_storage:/storage
+    depends_on:
+      - app
+    environment:
+      - DOMAIN=${DOMAIN}
+      - MAX_BODY_SIZE=${MAX_BODY_SIZE}
+volumes:
+  postgres_data:
+  app_storage:

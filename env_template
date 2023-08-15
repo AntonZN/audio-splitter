@@ -1,0 +1,19 @@
+# DB Config
+POSTGRES_SCHEME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+POSTGRES_DB=splitter
+
+# App Config
+PORT=8000
+MAX_WORKERS=2
+
+# Nginx Config
+DOMAIN=localhost
+MAX_BODY_SIZE='20M'
+
+# RMQ Config
+RABBITMQ_USERNAME=splitter
+RABBITMQ_PASSWORD=splitter
