@@ -9,3 +9,9 @@ class Stem(BaseModel):
     type: str
     url: str
     created: datetime
+
+
+class QueueRecordMessage(BaseModel):
+    record_id: str
+    output_codec: str
+    output_stems: int

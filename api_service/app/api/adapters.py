@@ -9,8 +9,10 @@ from app.models.records import Record, Stem, StemType
 settings = get_settings()
 
 
-async def create_record(name: str, record_path: str):
-    return await Record.create(name=name, file_path=record_path)
+async def create_record(name: str, record_path: str, device_token: str = None):
+    return await Record.create(
+        name=name, file_path=record_path, device_token=device_token
+    )
 
 
 async def get_record(record_id: str):
@@ -41,32 +43,3 @@ async def get_stems_for_record(record_id: str):
         )
 
     return await record.stems
-
-
-async def create_stems(record: Record, stems_count: int, codec: Codec):
-    stem_types = [
-        StemType.VOCAL,
-        StemType.ACCOMPANIMENT,
-        StemType.DRUMS,
-        StemType.BASS,
-        StemType.OTHER,
-        StemType.PIANO,
-    ]
-
-    stems = []
-
-    for i in range(stems_count):
-        stem_type = stem_types[i]
-        stem_name = f"{stem_type.value}.{codec.value}"
-        file_path = f"{settings.STEMS_FOLDER}/{record.id}/{stem_name}"
-
-        stem = Stem(
-            record_id=record.id,
-            name=stem_name,
-            type=stem_type,
-            file_path=file_path,
-        )
-
-        stems.append(stem)
-
-    await Stem.bulk_create(stems)

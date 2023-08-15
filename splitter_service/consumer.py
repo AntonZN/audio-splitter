@@ -5,7 +5,7 @@ import aio_pika
 from aio_pika.abc import AbstractRobustConnection
 from aio_pika.pool import Pool
 
-from app.core.config import get_settings
+from core.config import get_settings
 
 settings = get_settings()
 

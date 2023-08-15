@@ -4,7 +4,7 @@ import logging
 from pydantic import BaseModel
 from spleeter.audio import Codec
 
-from app.utils.split import separate_record_subprocess
+from utils.split import separate_record_subprocess
 
 
 class Message(BaseModel):

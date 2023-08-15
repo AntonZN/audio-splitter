@@ -1,7 +1,7 @@
 import asyncio
 
-from splitter.consumer import run_consumer
-from splitter.handler import handle
+from consumer import run_consumer
+from handler import handle
 
 
 async def main() -> None:

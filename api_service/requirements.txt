@@ -10,3 +10,5 @@ gunicorn==21.2.0
 starlette~=0.27.0
 aiofiles~=23.2.1
 arrow~=1.2.3
+aio-pika
+loguru

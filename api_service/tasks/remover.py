@@ -1,15 +1,9 @@
 import aiofiles.os
 
 import arrow
-from app.core.config import get_settings
 
 from app.models.records import Stem
 from tasks.db import init_db
-
-
-settings = get_settings()
-STREAM_FOLDER = "/stream"
-STORAGE_FOLDER = "/storage"
 
 
 async def remove_files(files):

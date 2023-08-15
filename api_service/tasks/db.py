@@ -1,6 +1,6 @@
 from tortoise import Tortoise
 
-from app.core.config import get_settings
+from api_service.app.core import get_settings
 
 settings = get_settings()
 

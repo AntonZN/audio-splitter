@@ -1,4 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn:python3.10-slim
+FROM python:3.10
 
 RUN apt-get update && apt-get install -y ffmpeg libsndfile1 wget tar
 
@@ -23,14 +23,17 @@ RUN wget https://github.com/deezer/spleeter/releases/download/v1.4.0/5stems.tar.
     rm 5stems.tar.gz
 
 WORKDIR /app
-RUN pip install --upgrade pip
-RUN pip install musdb museval spleeter
 
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-COPY ./app /app/app
-COPY ./tasks /app/tasks
-COPY ./tasks.py /app/tasks.py
-COPY ./pyproject.toml /app/pyproject.toml
+
+RUN pip install --upgrade pip
+RUN pip install musdb museval spleeter
+
+
+
+COPY . /app
+
+CMD ["python", "run.py"]

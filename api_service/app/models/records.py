@@ -34,11 +34,12 @@ class Record(Model):
     name = fields.CharField(max_length=255)
     status = fields.CharEnumField(enum_type=RecordStatus, default=RecordStatus.PENDING)
     file_path = fields.CharField(max_length=1024)
+    device_token = fields.CharField(max_length=1024)
     created_at = fields.DatetimeField(auto_now_add=True)
     stems: fields.ReverseRelation["Stem"]
 
     class PydanticMeta:
-        exclude = ["file_path"]
+        exclude = ["file_path", "device_token"]
 
 
 class Stem(Model):

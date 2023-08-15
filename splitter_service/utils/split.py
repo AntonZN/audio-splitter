@@ -3,12 +3,40 @@ import os
 from spleeter.audio import Codec
 from spleeter.separator import Separator
 
-from app.api.adapters import create_stems
-from app.core.config import get_settings
-from app.models.records import Record, RecordStatus
-from app.utils.cmd import run_command
+from core.config import get_settings
+from models import StemType, Stem, Record, RecordStatus
+from utils.cmd import run_command
 
 settings = get_settings()
+
+
+async def create_stems(record: Record, stems_count: int, codec: Codec):
+    stem_types = [
+        StemType.VOCAL,
+        StemType.ACCOMPANIMENT,
+        StemType.DRUMS,
+        StemType.BASS,
+        StemType.OTHER,
+        StemType.PIANO,
+    ]
+
+    stems = []
+
+    for i in range(stems_count):
+        stem_type = stem_types[i]
+        stem_name = f"{stem_type.value}.{codec.value}"
+        file_path = f"{settings.STEMS_FOLDER}/{record.id}/{stem_name}"
+
+        stem = Stem(
+            record_id=record.id,
+            name=stem_name,
+            type=stem_type,
+            file_path=file_path,
+        )
+
+        stems.append(stem)
+
+    await Stem.bulk_create(stems)
 
 
 async def separate_record(record_id: str, codec: Codec, count_stems: int):

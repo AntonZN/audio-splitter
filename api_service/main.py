@@ -33,7 +33,6 @@ if settings.DEBUG:
     sh.setLevel(logging.DEBUG)
     sh.setFormatter(fmt)
 
-    # will print debug sql
     logger_db_client = logging.getLogger("tortoise.db_client")
     logger_db_client.setLevel(logging.DEBUG)
     logger_db_client.addHandler(sh)
