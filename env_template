@@ -17,3 +17,7 @@ DOMAIN=localhost
 RABBITMQ_HOST=rabbitmq
 RABBITMQ_USERNAME=splitter
 RABBITMQ_PASSWORD=splitter
+
+# Cerbot
+
+USE_CERTBOT=false
