@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from api import responses
-from api.endpoints import records
-from core.deps import token_validation
+from app.api import responses
+from app.api.endpoints import records
+from app.core.deps import token_validation
 
 router = APIRouter(
     dependencies=[Depends(token_validation)],

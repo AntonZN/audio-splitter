@@ -4,9 +4,9 @@ import aio_pika
 from aio_pika import DeliveryMode, Message, connect
 from loguru import logger
 
-from api.schemas import Codec
+from app.api.schemas import Codec
 
-from core.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 

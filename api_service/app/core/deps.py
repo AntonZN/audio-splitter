@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status, Security
 from fastapi.security.api_key import APIKeyQuery
 
-from core.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 token_query = APIKeyQuery(name="token")
