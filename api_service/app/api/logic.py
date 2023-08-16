@@ -35,10 +35,10 @@ async def publish_record(record_id: str, codec: Codec, count_stems: int):
         channel = await connection.channel()
 
         try:
+            exchange = await channel.get_exchange(settings.RABBITMQ_ROUTING_KEY, ensure=True)
+        except Exception:
             exchange = await channel.declare_exchange(
                 settings.RABBITMQ_ROUTING_KEY, aio_pika.ExchangeType.DIRECT
             )
-        except Exception:
-            exchange = await channel.get_exchange(settings.RABBITMQ_ROUTING_KEY, ensure=True)
 
         await exchange.publish(message, routing_key=settings.RABBITMQ_ROUTING_KEY)
