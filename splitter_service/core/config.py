@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     STORAGE_FOLDER: str = os.path.join("/storage")
     STEMS_FOLDER: str = os.path.join(STORAGE_FOLDER, "stems")
-
+    CONSUMERS: int = 5
+    APNS_CERT: Optional[str] = None
     RABBITMQ_HOST: str = "rabbitmq"
     RABBITMQ_USERNAME: str
     RABBITMQ_PASSWORD: str

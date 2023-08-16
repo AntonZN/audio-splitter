@@ -1,16 +1,29 @@
+import asyncio
 import os
 
-from spleeter.audio import Codec
 from spleeter.separator import Separator
 
 from core.config import get_settings
 from models import StemType, Stem, Record, RecordStatus
-from utils.cmd import run_command
+from loguru import logger
 
 settings = get_settings()
 
 
-async def create_stems(record: Record, stems_count: int, codec: Codec):
+async def run_command(cmd: str) -> bool:
+    process = await asyncio.subprocess.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE
+    )
+
+    await process.communicate()
+
+    if process.returncode == 0:
+        return True
+    else:
+        return False
+
+
+async def create_stems(record: Record, stems_count: int, codec: str):
     stem_types = [
         StemType.VOCAL,
         StemType.ACCOMPANIMENT,
@@ -24,7 +37,7 @@ async def create_stems(record: Record, stems_count: int, codec: Codec):
 
     for i in range(stems_count):
         stem_type = stem_types[i]
-        stem_name = f"{stem_type.value}.{codec.value}"
+        stem_name = f"{stem_type.value}.{codec}"
         file_path = f"{settings.STEMS_FOLDER}/{record.id}/{stem_name}"
 
         stem = Stem(
@@ -39,7 +52,7 @@ async def create_stems(record: Record, stems_count: int, codec: Codec):
     await Stem.bulk_create(stems)
 
 
-async def separate_record(record_id: str, codec: Codec, count_stems: int):
+async def separate_record(record_id: str, codec: str, count_stems: int):
     output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
     os.makedirs(output_folder, exist_ok=True)
     record = await Record.get(id=record_id)
@@ -57,7 +70,7 @@ async def separate_record(record_id: str, codec: Codec, count_stems: int):
     os.remove(record.file_path)
 
 
-async def separate_record_subprocess(record_id: str, codec: Codec, count_stems: int):
+async def separate_record_subprocess(record_id: str, codec: str, count_stems: int):
     output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
     record = await Record.get(id=record_id)
     command = " ".join(
@@ -79,5 +92,5 @@ async def separate_record_subprocess(record_id: str, codec: Codec, count_stems: 
 
     await record.save(update_fields=["status"])
     await create_stems(record, count_stems, codec)
-
+    logger.debug("create_stems success")
     os.remove(record.file_path)

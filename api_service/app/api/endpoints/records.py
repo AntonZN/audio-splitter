@@ -10,8 +10,7 @@ from fastapi import (
     HTTPException,
     status,
 )
-from spleeter.audio import Codec
-
+from loguru import logger
 from app.api import responses
 from app.api.adapters import (
     create_record,
@@ -20,7 +19,7 @@ from app.api.adapters import (
     delete_record,
 )
 from app.api.logic import publish_record
-from app.api.schemas import Stem
+from app.api.schemas import Stem, Codec
 from app.core.config import get_settings
 from app.models.records import (
     RecordSchema,
@@ -47,6 +46,7 @@ async def upload_record(
     output_stems: Annotated[Stems, int, Form(alias="outputStems")] = Stems.TWO.value,
     device_token: Annotated[Optional[str], Form(alias="deviceToken")] = None,
 ):
+    logger.debug(12312312)
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
 
     record_path = os.path.join(settings.UPLOAD_FOLDER, f"{uuid4()}_{file.filename}")
@@ -58,7 +58,7 @@ async def upload_record(
         name=file.filename, record_path=record_path, device_token=device_token
     )
 
-    await publish_record(record.id, output_codec, output_stems)
+    await publish_record(str(record.id), output_codec, output_stems)
 
     return record
 
