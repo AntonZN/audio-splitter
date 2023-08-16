@@ -10,7 +10,6 @@ from fastapi import (
     HTTPException,
     status,
 )
-from spleeter.audio import Codec
 
 from app.api import responses
 from app.api.adapters import (
@@ -20,7 +19,7 @@ from app.api.adapters import (
     delete_record,
 )
 from app.api.logic import publish_record
-from app.api.schemas import Stem
+from app.api.schemas import Stem, Codec
 from app.core.config import get_settings
 from app.models.records import (
     RecordSchema,
@@ -57,7 +56,7 @@ async def upload_record(
         name=file.filename, record_path=record_path, device_token=device_token
     )
 
-    await publish_record(record.id, output_codec, output_stems)
+    await publish_record(str(record.id), output_codec, output_stems)
 
     return record
 

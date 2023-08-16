@@ -1,6 +1,6 @@
 import aiofiles.os
 from fastapi import HTTPException
-from spleeter.audio import Codec
+from app.api.schemas import Codec
 from starlette import status
 
 from app.core.config import get_settings

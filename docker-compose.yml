@@ -6,51 +6,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - rabbitmqstats_data:/bitnami/rabbitmq/mnesia
     environment:
       - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
-  db:
-    image: postgres:13
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  db_backup:
-    image: postgres:13
-    env_file:
-      - .env
-    command: sh -c 'pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB > /backups/backup_`date +%Y-%m-%d_%H-%M-%S`.sql'
-    volumes:
-      - ./db_backups:/backups
-    depends_on:
-      - db
-
-  app:
-    build:
-      context: ./api_service
-      dockerfile: Dockerfile
-    ports:
-      - "8000:80"
-    volumes:
-      - app_storage:/storage
-    depends_on:
-      - db
-      - rabbitmq
-    env_file:
-      - .env
-
-  splitter:
-    build:
-      context: ./splitter_service
-      dockerfile: Dockerfile
-    volumes:
-      - app_storage:/storage
-    depends_on:
-      - db
-      - rabbitmq
-    env_file:
-      - .env
+      - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.1
 
   nginx:
     image: nginx:latest
@@ -76,6 +37,51 @@ services:
     environment:
       - USE_CERTBOT=${USE_CERTBOT}
 
+  db:
+    image: postgres:13
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  db_backup:
+    image: postgres:13
+    env_file:
+      - .env
+    command: sh -c 'pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB > /backups/backup_`date +%Y-%m-%d_%H-%M-%S`.sql'
+    volumes:
+      - ./db_backups:/backups
+    depends_on:
+      - db
+
+  app:
+    build:
+      context: ./api_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - app_storage:/storage
+      - ./migrations:/app/app/models/migrations
+    depends_on:
+      - db
+      - rabbitmq
+    env_file:
+      - .env
+
+  splitter:
+    build:
+      context: ./splitter_service
+      dockerfile: Dockerfile
+    volumes:
+      - app_storage:/storage
+    depends_on:
+      - db
+      - rabbitmq
+    env_file:
+      - .env
+
 volumes:
   postgres_data:
+  rabbitmqstats_data:
   app_storage:

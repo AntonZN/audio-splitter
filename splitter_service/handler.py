@@ -2,14 +2,12 @@ import json
 import logging
 
 from pydantic import BaseModel
-from spleeter.audio import Codec
-
-from utils.split import separate_record_subprocess
+from splitter import separate_record_subprocess
 
 
 class Message(BaseModel):
     record_id: str
-    codec: Codec
+    codec: str
     count_stems: int
 
 
@@ -17,7 +15,7 @@ async def handle(amq_message: str) -> None:
     try:
         message_data = json.loads(amq_message)
     except json.JSONDecodeError:
-        logging.error(f"Message is not json formatted {amq_message}")
+
         return None
 
     try:
@@ -27,10 +25,7 @@ async def handle(amq_message: str) -> None:
         return None
 
     if topic == "split":
-        try:
-            message = Message(**message_data)
-            await separate_record_subprocess(
-                message.record_id, message.codec, message.count_stems
-            )
-        except TypeError:
-            logging.error(f"Invalid message format: {message_data.keys()}")
+        await separate_record_subprocess(
+            message_data["record_id"], message_data["codec"], message_data["count_stems"]
+        )
+
