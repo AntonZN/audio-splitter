@@ -36,6 +36,7 @@ async def get_connection() -> AbstractRobustConnection:
 
 
 async def get_channel(connection_pool) -> aio_pika.Channel:
+    await asyncio.sleep(10)
     async with connection_pool.acquire() as connection:
         return await connection.channel()
 
