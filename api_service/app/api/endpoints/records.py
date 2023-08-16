@@ -10,7 +10,7 @@ from fastapi import (
     HTTPException,
     status,
 )
-
+from loguru import logger
 from app.api import responses
 from app.api.adapters import (
     create_record,
@@ -45,6 +45,7 @@ async def upload_record(
     output_stems: Annotated[Stems, int, Form(alias="outputStems")] = Stems.TWO.value,
     device_token: Annotated[Optional[str], Form(alias="deviceToken")] = None,
 ):
+    logger.debug(12312312)
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
 
     record_path = os.path.join(settings.UPLOAD_FOLDER, f"{uuid4()}_{file.filename}")
