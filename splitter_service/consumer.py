@@ -46,12 +46,9 @@ async def consume(
 ) -> None:
     async with channel_pool.acquire() as channel:
         await channel.set_qos(1)
-        try:
-            exchange = await channel.get_exchange(settings.RABBITMQ_ROUTING_KEY, ensure=True)
-        except Exception:
-            exchange = await channel.declare_exchange(
-                settings.RABBITMQ_ROUTING_KEY, aio_pika.ExchangeType.DIRECT
-            )
+        exchange = await channel.declare_exchange(
+            settings.RABBITMQ_ROUTING_KEY, aio_pika.ExchangeType.DIRECT
+        )
         queue = await channel.declare_queue(
             queue_name,
             durable=True,
