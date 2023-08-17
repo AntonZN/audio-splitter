@@ -30,9 +30,8 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 
 RUN pip install --upgrade pip
-RUN pip install musdb museval spleeter
-
-
+RUN pip install musdb museval
+RUN pip install --default-timeout=100 spleeter
 
 COPY . /app
 

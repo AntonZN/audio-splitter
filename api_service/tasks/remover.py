@@ -2,7 +2,7 @@ import aiofiles.os
 
 import arrow
 
-from app.models.records import Stem
+from app.models.records import Stem, Record
 from tasks.db import init_db
 
 
@@ -17,9 +17,12 @@ async def remove_files(files):
 
 async def remover():
     await init_db()
-
-    files = await Stem.filter(
-        created_at__lte=str(arrow.utcnow().shift(hours=-2))
-    ).values_list("file_path", flat=True)
-
-    await remove_files(files)
+    async for record in await Record.filter(
+        created_at__lte=str(arrow.utcnow().shift(hours=-24))
+    ):
+        stems_files = await Stem.filter(record=record).values_list(
+            "file_path", flat=True
+        )
+        await remove_files(stems_files)
+        await Stem.filter(record=record).delete()
+        await record.delete()
