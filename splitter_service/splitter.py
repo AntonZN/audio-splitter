@@ -37,6 +37,10 @@ async def create_stems(record: Record, stems_count: int, codec: str):
 
     for i in range(stems_count):
         stem_type = stem_types[i]
+
+        if stems_count > 2 and stem_type == StemType.ACCOMPANIMENT:
+            continue
+
         stem_name = f"{stem_type.value}.{codec}"
         file_path = f"{settings.STEMS_FOLDER}/{record.id}/{stem_name}"
 
