@@ -24,19 +24,26 @@ async def run_command(cmd: str) -> bool:
 
 
 async def create_stems(record: Record, stems_count: int, codec: str):
-    stem_types = [
-        StemType.VOCAL,
-        StemType.ACCOMPANIMENT,
-        StemType.DRUMS,
-        StemType.BASS,
-        StemType.OTHER,
-        StemType.PIANO,
-    ]
+    stem_mapping = {
+        2: [StemType.VOCAL, StemType.ACCOMPANIMENT],
+        4: [StemType.VOCAL, StemType.DRUMS, StemType.BASS, StemType.OTHER],
+        5: [StemType.VOCAL, StemType.DRUMS, StemType.BASS, StemType.PIANO, StemType.OTHER]
+    }
+
+    stem_types = stem_mapping.get(stems_count)
+
+    if not stem_types:
+        record.status = RecordStatus.ERROR
+        await record.save(update_fields=["status"])
 
     stems = []
 
     for i in range(stems_count):
         stem_type = stem_types[i]
+
+        if stems_count > 2 and stem_type == StemType.ACCOMPANIMENT:
+            continue
+
         stem_name = f"{stem_type.value}.{codec}"
         file_path = f"{settings.STEMS_FOLDER}/{record.id}/{stem_name}"
 
