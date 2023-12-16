@@ -48,6 +48,6 @@ async def generate(tts_id: str, text: str, lang: str, custom_prompt=None):
         tts.file_path = None
     else:
         tts.status = RecordStatus.DONE
-        tts.file_path = result_filepath
+        tts.speech_path = result_filepath
 
-    await tts.save(update_fields=["status", "file_path"])
+    await tts.save(update_fields=["status", "speech_path"])
