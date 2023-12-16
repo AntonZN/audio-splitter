@@ -13,7 +13,7 @@ from core.config import get_settings
 settings = get_settings()
 
 
-def generate(tts_id: str, text: str, lang: str, custom_prompt=None):
+async def generate(tts_id: str, text: str, lang: str, custom_prompt=None):
     tts = await TTS.get(id=tts_id)
     output_folder = os.path.join(settings.TTS_FOLDER, str(tts_id))
     result_filepath = f"{output_folder}/result.wav"
