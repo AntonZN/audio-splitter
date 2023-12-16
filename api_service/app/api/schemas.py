@@ -59,14 +59,14 @@ class Lang(str, Enum):
     ZH: str = "zh"
 
 
-class Speaker(int, Enum):
-    NULL: int = 0
-    ONE: int = 1
-    TWO: int = 2
-    FRE: int = 3
-    FOUR: int = 4
-    FIVE: int = 5
-    SIX: int = 6
-    SEVEN: int = 7
-    EIGHT: int = 8
-    NINE: int = 9
+class Speaker(str, Enum):
+    NULL: str = "0"
+    ONE: str = "1"
+    TWO: str = "2"
+    FRE: str = "3"
+    FOUR: str = "4"
+    FIVE: str = "5"
+    SIX: str = "6"
+    SEVEN: str = "7"
+    EIGHT: str = "8"
+    NINE: str = "9"
