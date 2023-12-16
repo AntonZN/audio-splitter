@@ -52,7 +52,7 @@ async def add_tts(
     response_model=TTSSchema,
     description="Статус обработки преобразования текста в речь",
 )
-async def get_tts(tts_id: str):
+async def get_tts_info(tts_id: str):
     tts = await get_tts(tts_id)
 
     if not tts:
