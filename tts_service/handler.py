@@ -31,6 +31,7 @@ async def handle(amq_message: str) -> None:
             message_data["tts_id"],
             message_data["text"],
             message_data["lang"],
+            message_data["speaker"],
             custom_prompt=message_data["prompt_id"],
         )
     elif topic == "clone":

@@ -13,7 +13,7 @@ from core.config import get_settings
 settings = get_settings()
 
 
-async def generate(tts_id: str, text: str, lang: str, custom_prompt=None):
+async def generate(tts_id: str, text: str, lang: str, speaker=None, custom_prompt=None):
     tts = await TTS.get(id=tts_id)
     output_folder = os.path.join(settings.TTS_FOLDER, str(tts_id))
     result_filepath = f"{output_folder}/result.wav"
@@ -22,7 +22,10 @@ async def generate(tts_id: str, text: str, lang: str, custom_prompt=None):
     if custom_prompt:
         prompt = custom_prompt
     else:
-        prompt = f"{lang}_speaker_0"
+        if speaker:
+            prompt = f"{lang}_speaker_{speaker}"
+        else:
+            prompt = f"{lang}_speaker_0"
 
     try:
         preload_models(

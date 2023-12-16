@@ -11,7 +11,7 @@ from app.api.adapters import (
     get_tts,
 )
 from app.api.logic import publish_text
-from app.api.schemas import Lang, Speach
+from app.api.schemas import Lang, Speach, Speaker
 from app.core.config import get_settings
 from app.models.records import (
     TTSSchema,
@@ -25,15 +25,17 @@ router = APIRouter()
     "/",
     response_model=TTSSchema,
     description=(
-        "Преобразовать текст в голос. Максимум 270 символов."
-        "В ответ получите `id` по которому можно получить статус обработки"
-        "Укажите `prompt_id` чтобы преобразовать текст в созданный голос"
-        "Укажите `deviceToken` для того чтобы отправить пуш уведомление пользователю о завершении обработки"
+        "Преобразовать текст в голос. Максимум 270 символов. \n"
+        "В ответ получите `id` по которому можно получить статус обработки\n"
+        "Укажите `speaker` чтобы выбрать голос который будет использоваться\n"
+        "Укажите `prompt_id` чтобы преобразовать текст в созданный голос, если задан этот параметр, то `lang` и `prompt_id` Не нужно указывать\n"
+        "Укажите `deviceToken` для того чтобы отправить пуш уведомление пользователю о завершении обработки\n"
     ),
 )
 async def add_tts(
     text: str,
     lang: Lang = Lang.EN.value,
+    speaker: Optional[Speaker] = None,
     prompt_id: Optional[str] = None,
     device_token: Optional[str] = None,
 ):
@@ -45,7 +47,7 @@ async def add_tts(
 
     tts = await create_tts(text, device_token)
 
-    await publish_text(str(tts.id), text, lang, prompt_id)
+    await publish_text(str(tts.id), text, lang, speaker=speaker, prompt_id=prompt_id)
 
     return tts
 
@@ -65,7 +67,7 @@ async def get_tts_info(tts_id: str):
 
     return Speach(
         id=tts.id,
-        url=f"{settings.MEDIA_URL}{tts.speech_path}",
+        url=f"{settings.MEDIA_URL}{tts.speech_path}" if tts.speech_path else None,
         status=tts.status.value,
         created=tts.created_at,
     )

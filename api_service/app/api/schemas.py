@@ -1,5 +1,7 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
+
 from pydantic import BaseModel, UUID4
 
 
@@ -14,7 +16,7 @@ class Stem(BaseModel):
 class Speach(BaseModel):
     id: UUID4
     status: str
-    url: str
+    url: Optional[str]
     created: datetime
 
 
@@ -55,3 +57,16 @@ class Lang(str, Enum):
     PT: str = "pt"
     TR: str = "tr"
     ZH: str = "zh"
+
+
+class Speaker(int, Enum):
+    NULL: int = 0
+    ONE: int = 1
+    TWO: int = 2
+    FRE: int = 3
+    FOUR: int = 4
+    FIVE: int = 5
+    SIX: int = 6
+    SEVEN: int = 7
+    EIGHT: int = 8
+    NINE: int = 9

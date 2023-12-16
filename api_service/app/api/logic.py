@@ -45,12 +45,15 @@ async def publish_record(record_id: str, codec: Codec, count_stems: int):
     await publish(message, key=settings.RABBITMQ_ROUTING_KEY)
 
 
-async def publish_text(tts_id: str, text: str, lang: Lang, prompt_id=None):
+async def publish_text(
+    tts_id: str, text: str, lang: Lang, speaker: int = None, prompt_id: str = None
+):
     message_data = {
         "topic": "tts",
         "tts_id": tts_id,
         "text": text,
         "lang": lang.value,
+        "speaker": speaker,
         "prompt_id": prompt_id,
     }
 
