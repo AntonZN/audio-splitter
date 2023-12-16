@@ -23,9 +23,9 @@ hubert_manager.make_sure_tokenizer_installed()
 
 hubert_model = CustomHubert(checkpoint_path="data/models/hubert/hubert.pt").to(device)
 
-tokenizer = CustomTokenizer.load_from_checkpoint("data/models/hubert/tokenizer.pth").to(
-    device
-)
+tokenizer = CustomTokenizer.load_from_checkpoint(
+    "data/models/hubert/tokenizer.pth", map_location=torch.device("cpu")
+).to(device)
 
 
 async def clone_voice(prompt_id: str):
