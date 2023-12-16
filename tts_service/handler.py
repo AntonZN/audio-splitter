@@ -17,6 +17,8 @@ async def handle(amq_message: str) -> None:
     except json.JSONDecodeError:
         return None
 
+    logging.error(f"Message {message_data}")
+
     try:
         topic = message_data.pop("topic")
     except AttributeError:
