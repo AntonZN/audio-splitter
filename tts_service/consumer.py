@@ -1,9 +1,11 @@
 import asyncio
+import logging
 from typing import Callable
 
 import aio_pika
 from aio_pika.abc import AbstractRobustConnection
 from aio_pika.pool import Pool
+from aiormq import exceptions
 
 from core.config import get_settings
 
@@ -15,15 +17,25 @@ async def run_consumer(loop, message_handler: Callable) -> None:
     channel_pool: Pool = Pool(get_channel, connection_pool, max_size=10, loop=loop)
     queue_name = "tts"
 
-    tasks = []
+    while True:
+        try:
+            tasks = []
 
-    for _ in range(settings.CONSUMERS):
-        tasks.append(
-            asyncio.create_task(consume(channel_pool, queue_name, message_handler))
-        )
+            for _ in range(settings.CONSUMERS):
+                tasks.append(
+                    asyncio.create_task(
+                        consume(channel_pool, queue_name, message_handler)
+                    )
+                )
 
-    for task in tasks:
-        await task
+            await asyncio.gather(*tasks)
+
+        except exceptions.AMQPConnectionError as e:
+            logging.error(f"Connection error: {e}")
+            await asyncio.sleep(5)
+        except Exception as e:
+            logging.error(f"Unhandled error: {e}")
+            break
 
 
 async def get_connection() -> AbstractRobustConnection:
@@ -44,18 +56,26 @@ async def get_channel(connection_pool) -> aio_pika.Channel:
 async def consume(
     channel_pool: Pool, queue_name: str, message_handler: Callable
 ) -> None:
-    async with channel_pool.acquire() as channel:
-        await channel.set_qos(1)
-        exchange = await channel.declare_exchange("tts", aio_pika.ExchangeType.DIRECT)
-        queue = await channel.declare_queue(
-            queue_name,
-            durable=True,
-            auto_delete=False,
-        )
+    while True:
+        try:
+            async with channel_pool.acquire() as channel:
+                await channel.set_qos(1)
+                exchange = await channel.declare_exchange(
+                    "tts", aio_pika.ExchangeType.DIRECT
+                )
+                queue = await channel.declare_queue(
+                    queue_name,
+                    durable=True,
+                    auto_delete=False,
+                )
 
-        await queue.bind(exchange, "tts")
+                await queue.bind(exchange, "tts")
 
-        async with queue.iterator() as queue_iter:
-            async for message in queue_iter:
-                await message_handler(message.body.decode())
-                await message.ack()
+                async with queue.iterator() as queue_iter:
+                    async for message in queue_iter:
+                        async with message.process():
+                            await message_handler(message.body.decode())
+
+        except exceptions.AMQPError as e:
+            logging.error(f"Error during consume: {e}")
+            await asyncio.sleep(5)
