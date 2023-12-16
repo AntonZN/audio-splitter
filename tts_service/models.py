@@ -59,3 +59,11 @@ class TTS(Model):
     device_token = fields.CharField(max_length=1024, null=True)
     speech_path = fields.CharField(max_length=1024, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
+
+
+class Prompt(Model):
+    id = fields.UUIDField(pk=True)
+    name = fields.CharField(max_length=256)
+    voice_path = fields.CharField(max_length=1024)
+    is_efficient = fields.BooleanField(default=False)
+    created_at = fields.DatetimeField(auto_now_add=True)

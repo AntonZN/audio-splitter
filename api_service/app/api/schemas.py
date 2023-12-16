@@ -18,6 +18,12 @@ class Speach(BaseModel):
     created: datetime
 
 
+class PromptForList(BaseModel):
+    id: UUID4
+    name: str
+    created: str
+
+
 class QueueRecordMessage(BaseModel):
     record_id: str
     output_codec: str

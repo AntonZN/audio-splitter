@@ -18,3 +18,5 @@ tqdm
 transformers
 audiolm_pytorch
 fairseq
+torchaudio
+encodec

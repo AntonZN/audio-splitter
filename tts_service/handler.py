@@ -3,6 +3,7 @@ import logging
 
 from pydantic import BaseModel
 from text_to_speach import generate
+from clone import clone_voice
 
 
 class Message(BaseModel):
@@ -29,3 +30,5 @@ async def handle(amq_message: str) -> None:
         await generate(
             message_data["tts_id"], message_data["text"], message_data["lang"]
         )
+    elif topic == "clone":
+        await clone_voice(message_data["prompt_id"])

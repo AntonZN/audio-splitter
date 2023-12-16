@@ -60,3 +60,18 @@ async def publish_text(tts_id: str, text: str, lang: Lang):
     )
 
     await publish(message, key=settings.RABBITMQ_ROUTING_KEY_TTS)
+
+
+async def publish_prompt(prompt_id):
+    message_data = {
+        "topic": "clone",
+        "prompt_id": prompt_id,
+    }
+
+    message_body = json.dumps(message_data).encode()
+    message = Message(
+        message_body,
+        delivery_mode=DeliveryMode.PERSISTENT,
+    )
+
+    await publish(message, key=settings.RABBITMQ_ROUTING_KEY_TTS)

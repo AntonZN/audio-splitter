@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from starlette import status
 
 from app.core.config import get_settings
-from app.models.records import Record, Stem, TTS
+from app.models.records import Record, Stem, TTS, Prompt
 
 settings = get_settings()
 
@@ -20,6 +20,18 @@ async def create_tts(text: str, device_token: str):
 
 async def get_tts(tts_id: str):
     return await TTS.get_or_none(id=tts_id)
+
+
+async def create_prompt(name: str, voice_path: str):
+    return await Prompt.create(name=name, voice_path=voice_path)
+
+
+async def delete_prompt(prompt_id: str):
+    return await Prompt.filter(id=prompt_id).delete()
+
+
+async def get_prompts():
+    return await Prompt.filter(is_efficient=True)
 
 
 async def get_record(record_id: str):

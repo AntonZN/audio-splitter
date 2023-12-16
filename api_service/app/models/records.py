@@ -62,8 +62,17 @@ class TTS(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
 
 
+class Prompt(Model):
+    id = fields.UUIDField(pk=True)
+    name = fields.CharField(max_length=256)
+    voice_path = fields.CharField(max_length=1024)
+    is_efficient = fields.BooleanField(default=False)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+
 RecordSchema = pydantic_model_creator(Record, name="RecordSchema")
 RecordStatusSchema = pydantic_model_creator(
     Record, name="RecrodStatusSchema", include=("id", "name", "status")
 )
 TTSSchema = pydantic_model_creator(TTS, name="TTSSchema")
+PromptSchema = pydantic_model_creator(Prompt, name="PromptSchema")
