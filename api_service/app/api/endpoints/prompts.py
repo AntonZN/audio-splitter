@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/prompts/list/",
+    "/",
     response_model=List[PromptForList],
     description="Список готовых моделей для TTS",
 )
@@ -42,7 +42,7 @@ async def prompts_list():
 
 
 @router.post(
-    "/prompts/create/",
+    "/",
     response_model=PromptSchema,
     description="Создать модель для клонирования голоса",
 )
@@ -64,7 +64,7 @@ async def prompt_create(
 
 
 @router.delete(
-    "/prompts/{prompt_id}/",
+    "/{prompt_id}/",
     description="Удалить модель для клонирования голоса",
 )
 async def prompt_delete(prompt_id: str):
