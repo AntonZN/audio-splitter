@@ -2,7 +2,7 @@ import json
 import logging
 
 from pydantic import BaseModel
-from tts_service.text_to_speach import generate
+from text_to_speach import generate
 
 
 class Message(BaseModel):
