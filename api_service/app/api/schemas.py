@@ -21,7 +21,7 @@ class Speach(BaseModel):
 class PromptForList(BaseModel):
     id: str
     name: str
-    created: str
+    created: datetime
 
 
 class QueueRecordMessage(BaseModel):
