@@ -12,7 +12,7 @@ from app.api.adapters import (
     get_tts,
 )
 from app.api.logic import publish_text
-from app.api.schemas import Lang
+from app.api.schemas import Lang, Speach
 from app.core.config import get_settings
 from app.models.records import (
     TTSSchema,
@@ -49,7 +49,7 @@ async def add_tts(
 
 @router.get(
     "/{tts_id}/",
-    response_model=TTSSchema,
+    response_model=Speach,
     description="Статус обработки преобразования текста в речь",
 )
 async def get_tts_info(tts_id: str):
@@ -60,4 +60,9 @@ async def get_tts_info(tts_id: str):
             status_code=status.HTTP_404_NOT_FOUND, detail="Обработка не найдена"
         )
 
-    return tts
+    return Speach(
+        id=tts.id,
+        url=f"{settings.MEDIA_URL}{tts.speech_path}",
+        status=tts.status.value,
+        created=tts.created_at,
+    )

@@ -11,6 +11,13 @@ class Stem(BaseModel):
     created: datetime
 
 
+class Speach(BaseModel):
+    id: UUID4
+    status: str
+    url: str
+    created: datetime
+
+
 class QueueRecordMessage(BaseModel):
     record_id: str
     output_codec: str
