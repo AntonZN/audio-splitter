@@ -20,6 +20,7 @@ from torchaudio.functional import resample
 from audiolm_pytorch.utils import curtail_to_multiple
 
 import logging
+
 logging.root.setLevel(logging.ERROR)
 
 
@@ -43,7 +44,7 @@ class CustomHubert(nn.Module):
         target_sample_hz=16000,
         seq_len_multiple_of=None,
         output_layer=9,
-        device=None
+        device=None,
     ):
         super().__init__()
         self.target_sample_hz = target_sample_hz
@@ -55,11 +56,13 @@ class CustomHubert(nn.Module):
 
         model_path = Path(checkpoint_path)
 
-        assert model_path.exists(), f'path {checkpoint_path} does not exist'
+        assert model_path.exists(), f"path {checkpoint_path} does not exist"
 
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
         load_model_input = {checkpoint_path: checkpoint}
-        model, *_ = fairseq.checkpoint_utils.load_model_ensemble_and_task(load_model_input)
+        model, *_ = fairseq.checkpoint_utils.load_model_ensemble_and_task(
+            load_model_input
+        )
 
         if device is not None:
             model[0].to(device)
@@ -72,12 +75,7 @@ class CustomHubert(nn.Module):
         return 1
 
     @torch.no_grad()
-    def forward(
-        self,
-        wav_input,
-        flatten=True,
-        input_sample_hz=None
-    ):
+    def forward(self, wav_input, flatten=True, input_sample_hz=None):
         device = wav_input.device
 
         if exists(input_sample_hz):
@@ -90,17 +88,19 @@ class CustomHubert(nn.Module):
             wav_input,
             features_only=True,
             mask=False,  # thanks to @maitycyrus for noticing that mask is defaulted to True in the fairseq code
-            output_layer=self.output_layer
+            output_layer=self.output_layer,
         )
 
-        embed, packed_shape = pack([embed['x']], '* d')
+        embed, packed_shape = pack([embed["x"]], "* d")
 
         # codebook_indices = self.kmeans.predict(embed.cpu().detach().numpy())
 
-        codebook_indices = torch.from_numpy(embed.cpu().detach().numpy()).to(device)  # .long()
+        codebook_indices = torch.from_numpy(embed.cpu().detach().numpy()).to(
+            device
+        )  # .long()
 
         if flatten:
             return codebook_indices
 
-        codebook_indices, = unpack(codebook_indices, packed_shape, '*')
+        (codebook_indices,) = unpack(codebook_indices, packed_shape, "*")
         return codebook_indices
