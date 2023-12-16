@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from starlette import status
 
 from app.core.config import get_settings
-from app.models.records import Record, Stem
+from app.models.records import Record, Stem, TTS
 
 settings = get_settings()
 
@@ -12,6 +12,14 @@ async def create_record(name: str, record_path: str, device_token: str = None):
     return await Record.create(
         name=name, file_path=record_path, device_token=device_token
     )
+
+
+async def create_tts(text: str, device_token: str):
+    return await TTS.create(text=text, device_token=device_token)
+
+
+async def get_tts(tts_id: str):
+    return await TTS.get_or_none(id=tts_id)
 
 
 async def get_record(record_id: str):

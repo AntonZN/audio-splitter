@@ -19,10 +19,6 @@ class Settings(BaseSettings):
     RABBITMQ_PASSWORD: str
     RABBITMQ_ROUTING_KEY: str = "records"
 
-    MODELS: List[str] = [
-        "api_service.models.records",
-    ]
-
     POSTGRES_SCHEME: str = "postgres"
     POSTGRES_HOST: str = "127.0.0.1"
     POSTGRES_USER: str

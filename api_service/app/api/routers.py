@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from app.api import responses
-from app.api.endpoints import records
+from app.api.endpoints import records, tts
 from app.core.deps import token_validation
 
 router = APIRouter(
@@ -14,3 +14,4 @@ router = APIRouter(
 )
 
 router.include_router(records.router, tags=["records"], prefix="/records")
+router.include_router(tts.router, tags=["tts"], prefix="/tts")

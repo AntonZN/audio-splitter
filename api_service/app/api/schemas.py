@@ -26,3 +26,19 @@ class Codec(str, Enum):
     M4A: str = "m4a"
     WMA: str = "wma"
     FLAC: str = "flac"
+
+
+class Lang(str, Enum):
+    RU: str = "ru"
+    DE: str = "de"
+    EN: str = "en"
+    ES: str = "es"
+    FR: str = "fr"
+    HI: str = "hi"
+    IT: str = "it"
+    JA: str = "ja"
+    KO: str = "ko"
+    PL: str = "pl"
+    PT: str = "pt"
+    TR: str = "tr"
+    ZH: str = "zh"

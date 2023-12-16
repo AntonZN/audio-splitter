@@ -53,7 +53,17 @@ class Stem(Model):
     )
 
 
+class TTS(Model):
+    id = fields.UUIDField(pk=True)
+    text = fields.TextField()
+    status = fields.CharEnumField(enum_type=RecordStatus, default=RecordStatus.PENDING)
+    device_token = fields.CharField(max_length=1024, null=True)
+    speech_path = fields.CharField(max_length=1024, null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+
 RecordSchema = pydantic_model_creator(Record, name="RecordSchema")
 RecordStatusSchema = pydantic_model_creator(
     Record, name="RecrodStatusSchema", include=("id", "name", "status")
 )
+TTSSchema = pydantic_model_creator(TTS, name="TTSSchema")

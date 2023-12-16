@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     RABBITMQ_USERNAME: str
     RABBITMQ_PASSWORD: str
     RABBITMQ_ROUTING_KEY: str = "records"
+    RABBITMQ_ROUTING_KEY_TTS: str = "tts"
 
     MODELS: List[str] = [
         "aerich.models",

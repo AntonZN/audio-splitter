@@ -80,6 +80,18 @@ services:
       - rabbitmq
     env_file:
       - .env
+  tts:
+    build:
+      context: ./tts_service
+      dockerfile: Dockerfile
+    volumes:
+      - app_storage:/storage
+      - ./tts_service/models:/app/models/
+    depends_on:
+      - db
+      - rabbitmq
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
