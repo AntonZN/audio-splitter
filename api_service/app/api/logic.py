@@ -47,7 +47,7 @@ async def publish_record(record_id: str, codec: Codec, count_stems: int):
 
 async def publish_text(tts_id: str, text: str, lang: Lang):
     message_data = {
-        "topic": "clone",
+        "topic": "tts",
         "tts_id": tts_id,
         "text": text,
         "lang": lang.value,
