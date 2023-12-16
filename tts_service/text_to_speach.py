@@ -3,7 +3,7 @@ from scipy.io.wavfile import write as write_wav
 import os
 from loguru import logger
 
-from tts_service.models import TTS, RecordStatus
+from models import TTS, RecordStatus
 
 os.environ["SUNO_OFFLOAD_CPU"] = "False"
 os.environ["SUNO_USE_SMALL_MODELS"] = "True"

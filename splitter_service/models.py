@@ -50,3 +50,12 @@ class Stem(Model):
     record: fields.ForeignKeyNullableRelation[Record] = fields.ForeignKeyField(
         "models.Record", related_name="stems", null=True
     )
+
+
+class TTS(Model):
+    id = fields.UUIDField(pk=True)
+    text = fields.TextField()
+    status = fields.CharEnumField(enum_type=RecordStatus, default=RecordStatus.PENDING)
+    device_token = fields.CharField(max_length=1024, null=True)
+    speech_path = fields.CharField(max_length=1024, null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
