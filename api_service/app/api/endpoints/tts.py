@@ -1,29 +1,20 @@
-import os
-from typing import Optional, Annotated, List
-from uuid import uuid4
+from typing import Optional
 
 from fastapi import (
     APIRouter,
     HTTPException,
     status,
-    UploadFile,
-    File,
-    Form,
 )
 
 from app.api.adapters import (
     create_tts,
     get_tts,
-    create_prompt,
-    get_prompts,
-    delete_prompt,
 )
-from app.api.logic import publish_text, publish_prompt
-from app.api.schemas import Lang, Speach, PromptForList
+from app.api.logic import publish_text
+from app.api.schemas import Lang, Speach
 from app.core.config import get_settings
 from app.models.records import (
     TTSSchema,
-    PromptSchema,
 )
 
 settings = get_settings()
@@ -36,11 +27,15 @@ router = APIRouter()
     description=(
         "Преобразовать текст в голос. Максимум 270 символов."
         "В ответ получите `id` по которому можно получить статус обработки"
+        "Укажите `prompt_id` чтобы преобразовать текст в созданный голос"
         "Укажите `deviceToken` для того чтобы отправить пуш уведомление пользователю о завершении обработки"
     ),
 )
 async def add_tts(
-    text: str, lang: Lang = Lang.EN.value, device_token: Optional[str] = None
+    text: str,
+    lang: Lang = Lang.EN.value,
+    prompt_id: Optional[str] = None,
+    device_token: Optional[str] = None,
 ):
     if len(text) > 270:
         raise HTTPException(
@@ -50,7 +45,7 @@ async def add_tts(
 
     tts = await create_tts(text, device_token)
 
-    await publish_text(str(tts.id), text, lang)
+    await publish_text(str(tts.id), text, lang, prompt_id)
 
     return tts
 

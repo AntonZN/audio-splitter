@@ -28,7 +28,10 @@ async def handle(amq_message: str) -> None:
 
     if topic == "tts":
         await generate(
-            message_data["tts_id"], message_data["text"], message_data["lang"]
+            message_data["tts_id"],
+            message_data["text"],
+            message_data["lang"],
+            custom_prompt=message_data["prompt_id"],
         )
     elif topic == "clone":
         await clone_voice(message_data["prompt_id"])
