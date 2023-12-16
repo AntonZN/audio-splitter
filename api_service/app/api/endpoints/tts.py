@@ -84,11 +84,11 @@ async def get_tts_info(tts_id: str):
 async def prompts_list():
     return [
         PromptForList(
-            id=stem.id,
-            name=stem.name,
-            created=stem.created_at,
+            id=str(prompt.id),
+            name=prompt.name,
+            created=prompt.created_at,
         )
-        for stem in await get_prompts()
+        for prompt in await get_prompts()
     ]
 
 

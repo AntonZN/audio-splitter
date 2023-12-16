@@ -19,7 +19,7 @@ class Speach(BaseModel):
 
 
 class PromptForList(BaseModel):
-    id: UUID4
+    id: str
     name: str
     created: str
 
