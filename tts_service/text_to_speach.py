@@ -38,7 +38,9 @@ async def generate(tts_id: str, text: str, lang: str, speaker=None, custom_promp
             fine_use_small=True,
             path="models",
         )
-        audio_array = generate_audio(text, history_prompt=prompt)
+        audio_array = generate_audio(
+            text, history_prompt=prompt, text_temp=0.7, waveform_temp=0.7
+        )
         write_wav(result_filepath, SAMPLE_RATE, audio_array)
         status = True
     except Exception as e:
