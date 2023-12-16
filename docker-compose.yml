@@ -86,7 +86,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - app_storage:/storage
-      - ./tts_service/models:/app/models/
+      - tts_models:/app/models/
+      - bark_prompts:/app/bark/assets/prompts
     depends_on:
       - db
       - rabbitmq
@@ -97,3 +98,5 @@ volumes:
   postgres_data:
   rabbitmqstats_data:
   app_storage:
+  tts_models:
+  bark_prompts:
