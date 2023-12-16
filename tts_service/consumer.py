@@ -73,8 +73,11 @@ async def consume(
 
                 async with queue.iterator() as queue_iter:
                     async for message in queue_iter:
-                        async with message.process():
-                            await message_handler(message.body.decode())
+                        task = asyncio.create_task(
+                            message_handler(message.body.decode())
+                        )
+                        await message.ack()
+                        await task
 
         except exceptions.AMQPError as e:
             logging.error(f"Error during consume: {e}")
