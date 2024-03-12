@@ -56,6 +56,8 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 RUN pip install musdb museval
 RUN pip install --default-timeout=100 spleeter
 
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
 COPY . /app
 
 CMD ["python", "run.py"]
