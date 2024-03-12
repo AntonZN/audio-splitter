@@ -11,6 +11,7 @@ services:
       - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.1
     command: >
       rabbitmq-server --auth-mechanism PLAIN
+
   nginx:
     image: nginx:latest
     ports:
