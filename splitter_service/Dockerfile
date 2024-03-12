@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
+FROM nvidia/cuda:12.3.2-runtime-ubuntu22.04
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -55,8 +55,7 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 RUN pip install musdb museval
 RUN pip install --default-timeout=100 spleeter
-
-
+RUN pip install tensorflow
 COPY . /app
 
 CMD ["python", "run.py"]
