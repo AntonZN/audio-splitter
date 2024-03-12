@@ -27,7 +27,13 @@ async def create_stems(record: Record, stems_count: int, codec: str):
     stem_mapping = {
         2: [StemType.VOCAL, StemType.ACCOMPANIMENT],
         4: [StemType.VOCAL, StemType.DRUMS, StemType.BASS, StemType.OTHER],
-        5: [StemType.VOCAL, StemType.DRUMS, StemType.BASS, StemType.PIANO, StemType.OTHER]
+        5: [
+            StemType.VOCAL,
+            StemType.DRUMS,
+            StemType.BASS,
+            StemType.PIANO,
+            StemType.OTHER,
+        ],
     }
 
     stem_types = stem_mapping.get(stems_count)
@@ -85,7 +91,7 @@ async def separate_record_subprocess(record_id: str, codec: str, count_stems: in
             "spleeter",
             "separate",
             f"-o {output_folder}",
-            f"-p spleeter:{count_stems}stems",
+            f"-p spleeter:{count_stems}stems-16kHz",
             "-f {instrument}" + f".{codec}",
             f"'{record.file_path}'",
         ]
