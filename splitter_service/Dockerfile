@@ -52,7 +52,7 @@ COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-
+RUN apt-get install cuda-11-8 -y
 RUN pip install musdb museval
 RUN pip install --default-timeout=100 spleeter
 COPY . /app
