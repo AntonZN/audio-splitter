@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.3.0-runtime-ubuntu22.04
+FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -56,7 +56,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 RUN pip install musdb museval
 RUN pip install --default-timeout=100 spleeter
 
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64
 
 COPY . /app
 
