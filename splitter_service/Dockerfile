@@ -55,7 +55,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 RUN pip install musdb museval
 RUN pip install --default-timeout=100 spleeter
-RUN pip install
 COPY . /app
 
 CMD ["python", "run.py"]
