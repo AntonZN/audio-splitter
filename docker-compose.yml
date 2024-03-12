@@ -3,23 +3,17 @@ version: '3'
 services:
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     volumes:
       - rabbitmqstats_data:/bitnami/rabbitmq/mnesia
     environment:
       - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.1
-    command: >
-      rabbitmq-server --auth-mechanism PLAIN
 
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "81:80"
     volumes:
       - ./nginx/conf/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -80,13 +74,6 @@ services:
     depends_on:
       - db
       - rabbitmq
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
     env_file:
       - .env
   tts:
