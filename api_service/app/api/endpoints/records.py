@@ -1,7 +1,7 @@
 import os
 from typing import Annotated, List, Optional
 from uuid import uuid4
-
+import httpx
 from fastapi import (
     APIRouter,
     UploadFile,
@@ -58,6 +58,14 @@ async def upload_record(
     )
 
     await publish_record(str(record.id), output_codec, output_stems)
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            await client.post(
+                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/?token=bishourytypednal",
+            )
+    except Exception as e:
+        logger.error(f"ERROR {e}")
 
     return record
 
