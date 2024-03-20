@@ -6,3 +6,4 @@ python-dotenv~=1.0.0
 tortoise-orm[asyncpg]==0.19.3
 pydantic==1.10.12
 aioapns
+httpx

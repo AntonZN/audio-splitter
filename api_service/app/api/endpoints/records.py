@@ -62,7 +62,7 @@ async def upload_record(
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             await client.post(
-                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/?token=bishourytypednal",
+                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/?token={settings.RVC_TOKEN}",
             )
     except Exception as e:
         logger.error(f"ERROR {e}")

@@ -1,6 +1,7 @@
 import asyncio
 import os
-
+import httpx
+import arrow
 from spleeter.separator import Separator
 
 from core.config import get_settings
@@ -107,3 +108,14 @@ async def separate_record_subprocess(record_id: str, codec: str, count_stems: in
     await create_stems(record, count_stems, codec)
     logger.debug("create_stems success")
     os.remove(record.file_path)
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            waiting_time_in_seconds = int(
+                (arrow.utcnow().datetime - record.created_at).total_seconds()
+            )
+            await client.post(
+                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
+                params={"seconds": waiting_time_in_seconds},
+            )
+    except:
+        pass

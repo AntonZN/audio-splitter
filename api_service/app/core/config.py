@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     AUTH_TOKEN: str = "123"
     LOG_LEVEL: str = "DEBUG"
     MEDIA_URL: str = "http://localhost"
+    RVC_TOKEN: str
     STORAGE_FOLDER: str = os.path.join("/storage")
     UPLOAD_FOLDER: str = os.path.join(STORAGE_FOLDER, "uploads")
     STEMS_FOLDER: str = os.path.join(STORAGE_FOLDER, "stems")
