@@ -29,7 +29,9 @@ async def publish(message: Message, key=None):
         await exchange.publish(message, routing_key=key)
 
 
-async def publish_record(record_id: str, codec: Codec, count_stems: int):
+async def publish_record(
+    record_id: str, codec: Codec, count_stems: int, key=settings.RABBITMQ_ROUTING_KEY
+):
     message_data = {
         "topic": "split",
         "record_id": record_id,
@@ -42,7 +44,7 @@ async def publish_record(record_id: str, codec: Codec, count_stems: int):
         message_body,
         delivery_mode=DeliveryMode.PERSISTENT,
     )
-    await publish(message, key=settings.RABBITMQ_ROUTING_KEY)
+    await publish(message, key=key)
 
 
 async def publish_text(

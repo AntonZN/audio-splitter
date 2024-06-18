@@ -1,7 +1,6 @@
 from enum import Enum, IntEnum
 
 from tortoise import fields
-from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.models import Model
 
 
@@ -15,7 +14,7 @@ class Stems(IntEnum):
 
 class StemType(str, Enum):
     ACCOMPANIMENT = "accompaniment"
-    NO_VOCAL = "no_vocals"
+    NO_VOCALS = "no_vocals"
     VOCAL = "vocals"
     BASS = "bass"
     DRUMS = "drums"
@@ -70,11 +69,3 @@ class Prompt(Model):
     voice_path = fields.CharField(max_length=1024)
     is_efficient = fields.BooleanField(default=False)
     created_at = fields.DatetimeField(auto_now_add=True)
-
-
-RecordSchema = pydantic_model_creator(Record, name="RecordSchema")
-RecordStatusSchema = pydantic_model_creator(
-    Record, name="RecrodStatusSchema", include=("id", "name", "status")
-)
-TTSSchema = pydantic_model_creator(TTS, name="TTSSchema")
-PromptSchema = pydantic_model_creator(Prompt, name="PromptSchema")

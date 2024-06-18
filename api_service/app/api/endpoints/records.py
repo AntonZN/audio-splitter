@@ -70,6 +70,48 @@ async def upload_record(
     return record
 
 
+@router.post(
+    "/upload_v2/",
+    response_model=RecordSchema,
+    description=(
+        "Загрузка записи. Используйте `multipart/form-data`. "
+        "В ответ получите `id` записи по которому можно получить статус и список дорожек"
+        "Укажите `deviceToken` для того чтобы отправить пуш уведомление пользователю о завершении обработки"
+    ),
+)
+async def upload_record(
+    file: Annotated[UploadFile, File()],
+    output_codec: Annotated[Codec, int, Form(alias="outputCodec")] = Codec.WAV.value,
+    output_stems: Annotated[Stems, int, Form(alias="outputStems")] = Stems.TWO.value,
+    device_token: Annotated[Optional[str], Form(alias="deviceToken")] = None,
+):
+    os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
+
+    record_path = os.path.join(settings.UPLOAD_FOLDER, f"{uuid4()}_{file.filename}")
+
+    with open(record_path, "wb") as f:
+        f.write(file.file.read())
+
+    record = await create_record(
+        name=file.filename, record_path=record_path, device_token=device_token
+    )
+
+    if output_codec not in [Codec.WAV, Codec.MP3, Codec.FLAC]:
+        output_codec = Codec.MP3
+
+    await publish_record(str(record.id), output_codec, output_stems, key="records_v2")
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            await client.post(
+                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/?token={settings.RVC_TOKEN}",
+            )
+    except Exception as e:
+        logger.error(f"ERROR {e}")
+
+    return record
+
+
 @router.get(
     "/{record_id}/",
     response_model=RecordStatusSchema,

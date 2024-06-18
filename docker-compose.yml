@@ -85,6 +85,26 @@ services:
               capabilities: [ gpu ]
     env_file:
       - .env
+
+  demucs:
+    build:
+      context: ./splitter_demucs
+      dockerfile: Dockerfile
+    volumes:
+      - app_storage:/storage
+    depends_on:
+      - db
+      - rabbitmq
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    env_file:
+      - .env
+
   tts:
     build:
       context: ./tts_service
