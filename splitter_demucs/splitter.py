@@ -26,13 +26,6 @@ async def run_command(cmd: str) -> bool:
 async def create_stems(record: Record, stems_count: int, codec: str):
     stem_mapping = {
         2: [StemType.VOCAL, StemType.NO_VOCALS],
-        5: [
-            StemType.VOCAL,
-            StemType.DRUMS,
-            StemType.BASS,
-            StemType.PIANO,
-            StemType.OTHER,
-        ],
         6: [
             StemType.VOCAL,
             StemType.DRUMS,

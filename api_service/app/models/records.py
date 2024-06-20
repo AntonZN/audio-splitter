@@ -11,6 +11,7 @@ class Stems(IntEnum):
     TWO: int = 2
     FOUR: int = 4
     FIVE: int = 5
+    SIX: int = 6
 
 
 class StemType(str, Enum):

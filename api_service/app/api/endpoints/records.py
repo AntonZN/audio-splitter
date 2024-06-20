@@ -1,4 +1,5 @@
 import os
+from enum import Enum, IntEnum
 from typing import Annotated, List, Optional
 from uuid import uuid4
 import httpx
@@ -70,6 +71,19 @@ async def upload_record(
     return record
 
 
+class CodecV2(str, Enum):
+    WAV: str = "wav"
+    MP3: str = "mp3"
+    FLAC: str = "flac"
+
+
+class StemsV2(IntEnum):
+    """Enumeration of output stems."""
+
+    TWO: int = 2
+    SIX: int = 6
+
+
 @router.post(
     "/upload_v2/",
     response_model=RecordSchema,
@@ -81,8 +95,8 @@ async def upload_record(
 )
 async def upload_record(
     file: Annotated[UploadFile, File()],
-    output_codec: Annotated[Codec, int, Form(alias="outputCodec")] = Codec.WAV.value,
-    output_stems: Annotated[Stems, int, Form(alias="outputStems")] = Stems.TWO.value,
+    output_codec: Annotated[CodecV2, int, Form(alias="outputCodec")] = Codec.WAV.value,
+    output_stems: Annotated[StemsV2, int, Form(alias="outputStems")] = Stems.TWO.value,
     device_token: Annotated[Optional[str], Form(alias="deviceToken")] = None,
 ):
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
