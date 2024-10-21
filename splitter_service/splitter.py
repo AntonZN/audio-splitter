@@ -85,37 +85,47 @@ async def separate_record(record_id: str, codec: str, count_stems: int):
 
 
 async def separate_record_subprocess(record_id: str, codec: str, count_stems: int):
-    output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
     record = await Record.get(id=record_id)
-    command = " ".join(
-        [
-            "spleeter",
-            "separate",
-            f"-o {output_folder}",
-            f"-p spleeter:{count_stems}stems-16kHz",
-            "-f {instrument}" + f".{codec}",
-            f"'{record.file_path}'",
-        ]
-    )
-    status = await run_command(command)
-
-    if not status:
-        record.status = RecordStatus.ERROR
-    else:
-        record.status = RecordStatus.DONE
-
-    await record.save(update_fields=["status"])
-    await create_stems(record, count_stems, codec)
-    logger.debug("create_stems success")
-    os.remove(record.file_path)
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            waiting_time_in_seconds = int(
-                (arrow.utcnow().datetime - record.created_at).total_seconds()
-            )
-            await client.post(
-                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
-                params={"seconds": waiting_time_in_seconds},
-            )
-    except:
-        pass
+        output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
+        command = " ".join(
+            [
+                "spleeter",
+                "separate",
+                f"-o {output_folder}",
+                f"-p spleeter:{count_stems}stems-16kHz",
+                "-f {instrument}" + f".{codec}",
+                f"'{record.file_path}'",
+            ]
+        )
+        status = await run_command(command)
+
+        if not status:
+            record.status = RecordStatus.ERROR
+        else:
+            record.status = RecordStatus.DONE
+
+        await record.save(update_fields=["status"])
+        await create_stems(record, count_stems, codec)
+        logger.debug("create_stems success")
+
+        try:
+            os.remove(record.file_path)
+        except Exception:
+            pass
+
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                waiting_time_in_seconds = int(
+                    (arrow.utcnow().datetime - record.created_at).total_seconds()
+                )
+                await client.post(
+                    f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
+                    params={"seconds": waiting_time_in_seconds},
+                )
+        except:
+            pass
+
+    except Exception:
+        record.status = RecordStatus.ERROR
+        await record.save(update_fields=["status"])
