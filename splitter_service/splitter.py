@@ -81,7 +81,11 @@ async def separate_record(record_id: str, codec: str, count_stems: int):
     record.status = RecordStatus.DONE
     await record.save(update_fields=["status"])
     await create_stems(record, count_stems, codec)
-    os.remove(record.file_path)
+
+    try:
+        os.remove(record.file_path)
+    except Exception:
+        pass
 
 
 async def separate_record_subprocess(record_id: str, codec: str, count_stems: int):
