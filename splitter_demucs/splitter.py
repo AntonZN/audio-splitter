@@ -68,50 +68,63 @@ async def create_stems(record: Record, stems_count: int, codec: str):
 
 
 async def separate_record_subprocess(record_id: str, codec: str, count_stems: int):
-    output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
-    record = await Record.get(id=record_id)
-    if count_stems > 2:
-        command = " ".join(
-            [
-                "demucs",
-                "--mp3" if codec == "mp3" else "",
-                f"-o {output_folder}",
-                "--filename {stem}" + f".{codec}",
-                f"-n htdemucs_6s",
-                f"'{record.file_path}'",
-            ]
-        )
-    else:
-        command = " ".join(
-            [
-                "demucs",
-                "--mp3" if codec == "mp3" else "",
-                "--two-stems=vocals",
-                f"-o {output_folder}",
-                "--filename {stem}" + f".{codec}",
-                f"-n htdemucs_6s",
-                f"'{record.file_path}'",
-            ]
-        )
-    status = await run_command(command)
-
-    if not status:
-        record.status = RecordStatus.ERROR
-    else:
-        record.status = RecordStatus.DONE
-
-    await record.save(update_fields=["status"])
-    await create_stems(record, count_stems, codec)
-    logger.debug("create_stems success")
-    os.remove(record.file_path)
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            waiting_time_in_seconds = int(
-                (arrow.utcnow().datetime - record.created_at).total_seconds()
+        record = await Record.get(id=record_id)
+    except Exception:
+        return
+
+    try:
+        output_folder = os.path.join(settings.STEMS_FOLDER, str(record_id))
+        if count_stems > 2:
+            command = " ".join(
+                [
+                    "demucs",
+                    "--mp3" if codec == "mp3" else "",
+                    f"-o {output_folder}",
+                    "--filename {stem}" + f".{codec}",
+                    f"-n htdemucs_6s",
+                    f"'{record.file_path}'",
+                ]
             )
-            await client.post(
-                f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
-                params={"seconds": waiting_time_in_seconds},
+        else:
+            command = " ".join(
+                [
+                    "demucs",
+                    "--mp3" if codec == "mp3" else "",
+                    "--two-stems=vocals",
+                    f"-o {output_folder}",
+                    "--filename {stem}" + f".{codec}",
+                    f"-n htdemucs_6s",
+                    f"'{record.file_path}'",
+                ]
             )
-    except:
-        pass
+        status = await run_command(command)
+
+        if not status:
+            record.status = RecordStatus.ERROR
+        else:
+            record.status = RecordStatus.DONE
+
+        await record.save(update_fields=["status"])
+        await create_stems(record, count_stems, codec)
+        logger.debug("create_stems success")
+
+        try:
+            os.remove(record.file_path)
+        except Exception:
+            pass
+
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                waiting_time_in_seconds = int(
+                    (arrow.utcnow().datetime - record.created_at).total_seconds()
+                )
+                await client.post(
+                    f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
+                    params={"seconds": waiting_time_in_seconds},
+                )
+        except Exception:
+            pass
+    except Exception:
+        record.status = RecordStatus.ERROR
+        await record.save(update_fields=["status"])
