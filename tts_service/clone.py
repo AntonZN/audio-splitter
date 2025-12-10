@@ -28,6 +28,16 @@ tokenizer = CustomTokenizer.load_from_checkpoint(
 ).to(device)
 
 
+_original_torch_load = torch.load
+
+
+def _trusted_load(*args, **kwargs):
+    kwargs["weights_only"] = False
+    return _original_torch_load(*args, **kwargs)
+
+
+torch.load = _trusted_load
+
 async def clone_voice(prompt_id: str):
     prompt = await Prompt.get(id=prompt_id)
 
