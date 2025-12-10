@@ -18,5 +18,5 @@ tqdm
 transformers
 audiolm_pytorch
 fairseq
-torchaudio
+torchaudio==2.1.2
 encodec
