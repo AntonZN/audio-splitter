@@ -10,12 +10,12 @@ aioapns
 boto3
 encodec
 funcy
-numpy
-scipy
-tokenizers
+numpy==1.23.5
+scipy==1.11.4
+tokenizers==0.20.1
 torch==2.1.2
-tqdm
-transformers
+tqdm==4.66.1
+transformers==4.45.2
 audiolm_pytorch
 fairseq==0.12.2
 torchaudio==2.1.2
