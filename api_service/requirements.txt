@@ -13,3 +13,4 @@ arrow~=1.2.3
 aio-pika
 loguru
 httpx
+essentia
