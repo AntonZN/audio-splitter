@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from typing import List
 
 from app.api.analyze_fn import analyze_audio
+from app.core.config import get_settings
 
 settings = get_settings()
 router = APIRouter()
