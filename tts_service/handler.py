@@ -1,10 +1,20 @@
 import json
 import logging
-
+import torch
 from pydantic import BaseModel
 from text_to_speach import generate
 from clone import clone_voice
 
+
+_original_torch_load = torch.load
+
+
+def _trusted_load(*args, **kwargs):
+    kwargs["weights_only"] = False
+    return _original_torch_load(*args, **kwargs)
+
+
+torch.load = _trusted_load
 
 class Message(BaseModel):
     record_id: str

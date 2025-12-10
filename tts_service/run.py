@@ -1,3 +1,5 @@
+import os
+
 import asyncio
 from tortoise import Tortoise
 from consumer import run_consumer
@@ -9,6 +11,7 @@ settings = get_settings()
 
 
 async def main() -> None:
+    os.environ["TORCH_LOAD_WEIGHTS_ONLY"] = "0"
     loop = asyncio.get_event_loop()
     await Tortoise.init(db_url=settings.DATABASE_URI, modules={"models": ["models"]})
     logger.debug("DB init")
