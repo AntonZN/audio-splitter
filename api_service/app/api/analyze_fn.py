@@ -53,6 +53,6 @@ def analyze_audio(
         "beats": [float(t) for t in beats],  # таймкоды битов, с
         "key": str(key),  # например 'G'
         "scale": str(scale),  # 'major' / 'minor'
-        "onsetSsec": [float(t) for t in onset_times],  # таймкоды онсетов, с
+        "onsetsSec": [float(t) for t in onset_times],  # таймкоды онсетов, с
     }
 
