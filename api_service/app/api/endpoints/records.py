@@ -101,13 +101,20 @@ async def upload_record(
 ):
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
 
-    record_path = os.path.join(settings.UPLOAD_FOLDER, f"{uuid4()}_{file.filename}")
+    filename = file.filename.translate(str.maketrans({
+        " ": "_",
+        "`": "_",
+        "^": "_",
+        "'": "",
+        '"': "",
+    }))
+    record_path = os.path.join(settings.UPLOAD_FOLDER, f"{uuid4()}_{filename}")
 
     with open(record_path, "wb") as f:
         f.write(file.file.read())
 
     record = await create_record(
-        name=file.filename, record_path=record_path, device_token=device_token
+        name=filename, record_path=record_path, device_token=device_token
     )
 
     if output_codec not in [Codec.WAV, Codec.MP3, Codec.FLAC]:
