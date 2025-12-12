@@ -33,7 +33,7 @@ class AudioAnalysisResult(BaseModel):
 
 
 @router.post(
-    "",
+    "/",
     response_model=AudioAnalysisResult,
     description=(
         "Загрузка записи для анализа. Используйте `multipart/form-data`. "
