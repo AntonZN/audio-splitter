@@ -18,5 +18,5 @@ RUN pip install madmom
 RUN pip install BeatNet
 RUN apt-get install -y git
 RUN pip install git+https://github.com/CPJKU/madmom
-
+RUN pip install -y librosa
 COPY . /app
