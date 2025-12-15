@@ -17,6 +17,10 @@ from typing import List
 from app.api.analyze_fn import analyze_audio
 from app.core.config import get_settings
 
+from app.api.schemas import BeatNetResult
+
+from app.api.analyze_fn import analyze_with_beatnet_offline
+
 settings = get_settings()
 router = APIRouter()
 
@@ -30,6 +34,8 @@ class AudioAnalysisResult(BaseModel):
         None,
         description="Таймкоды онсетов (атак) в секундах",
     )
+
+    beatN: Optional[BeatNetResult] = None
 
 
 @router.post(
@@ -52,7 +58,10 @@ async def analyze_record(
 
     try:
         data = analyze_audio(record_path, onset_type=onsetType)
-        return AudioAnalysisResult(**data)
+        bn = analyze_with_beatnet_offline(record_path)
+        result =  AudioAnalysisResult(**data)
+        result.beatN = bn
+        return result
     except Exception:
         raise HTTPException(status_code=500, detail="Audio analysis failed")
     finally:

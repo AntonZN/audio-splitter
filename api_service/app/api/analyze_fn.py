@@ -1,5 +1,12 @@
+from typing import List
+
 import essentia
 import essentia.standard as es
+import numpy as np
+
+from BeatNet.BeatNet import BeatNet
+
+from app.api.schemas import BeatNetResult
 
 
 def analyze_audio(
@@ -56,3 +63,57 @@ def analyze_audio(
         "onsetsSec": [float(t) for t in onset_times],  # таймкоды онсетов, с
     }
 
+
+def analyze_with_beatnet_offline(path: str) -> BeatNetResult:
+    """
+    Оффлайн-анализ трека BeatNet'ом + построение сетки для метронома.
+    """
+
+    # модель 1, offline, не рисуем графики
+    estimator = BeatNet(
+        model=1,
+        mode="offline",
+        inference_model="DBN",  # для offline автор рекомендует DBN
+        plot=[],
+        thread=False,
+        device="cpu",  # либо "cuda", если есть
+    )
+
+    # Output: numpy_array(num_beats, 2) → [time, downbeat_flag]
+    output = estimator.process(path)
+    # output.shape: (N, 2)
+
+    beat_times = output[:, 0].astype(float).tolist()
+    downbeat_times = output[output[:, 1] == 1][:, 0].astype(float).tolist()
+
+    # Оценка BPM по интервалам между битами
+    if len(beat_times) > 2:
+        intervals = np.diff(beat_times)
+        # фильтруем слишком мелкие / большие интервалы, если хочешь
+        intervals = intervals[(intervals > 0.1) & (intervals < 1.5)]
+        if len(intervals) > 0:
+            median_period = float(np.median(intervals))
+            bpm = 60.0 / median_period
+        else:
+            bpm = 0.0
+    else:
+        bpm = 0.0
+
+    # Ровная сетка для метронома
+    metronome_grid: List[float] = []
+    if bpm > 0 and beat_times:
+        period = 60.0 / bpm
+        first_beat = beat_times[0]
+        last_time = beat_times[-1] + 4 * period
+
+        t = first_beat
+        while t < last_time:
+            metronome_grid.append(t)
+            t += period
+
+    return BeatNetResult(
+        bpm=bpm,
+        beatTimes=beat_times,
+        downbeatTimes=downbeat_times,
+        metronomeGrid=metronome_grid,
+    )

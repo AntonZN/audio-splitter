@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, UUID4
 
@@ -70,3 +70,10 @@ class Speaker(str, Enum):
     SEVEN: str = "7"
     EIGHT: str = "8"
     NINE: str = "9"
+
+
+class BeatNetResult(BaseModel):
+    bpm: float
+    beatTimes: List[float]
+    downbeatTimes: List[float]
+    metronomeGrid: List[float]
