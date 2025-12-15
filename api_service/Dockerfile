@@ -16,6 +16,7 @@ RUN apt-get install -y  portaudio19-dev
 
 RUN pip install madmom
 RUN pip install BeatNet
+RUN apt-get install -y git
 RUN pip install git+https://github.com/CPJKU/madmom
 
 COPY . /app
