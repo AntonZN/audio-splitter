@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg
+    apt-get install -y --no-install-recommends build-essential pkg-config  libsndfile1-dev libsamplerate0-dev ffmpeg
 
 COPY requirements.txt /tmp/requirements.txt
 
