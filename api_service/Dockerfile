@@ -12,6 +12,9 @@ COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-RUN pip install madmom aubio BeatNet
+RUN apt-get install -y  portaudio19-dev
+
+RUN pip install madmom
+RUN pip install BeatNet
 
 COPY . /app
