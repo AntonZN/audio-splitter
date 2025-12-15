@@ -15,6 +15,3 @@ loguru
 httpx
 essentia
 cython
-madmom
-aubio
-BeatNet

@@ -5,11 +5,13 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY requirements.txt /tmp/requirements.txt
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg
 
+COPY requirements.txt /tmp/requirements.txt
+
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+RUN pip install madmom aubio BeatNet
 
 COPY . /app
