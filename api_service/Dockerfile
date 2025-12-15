@@ -19,4 +19,5 @@ RUN pip install BeatNet
 RUN apt-get install -y git
 RUN pip install git+https://github.com/CPJKU/madmom
 RUN pip install librosa
+RUn pip install pyaudio
 COPY . /app
