@@ -14,4 +14,3 @@ aio-pika
 loguru
 httpx
 essentia
-cython

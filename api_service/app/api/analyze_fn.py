@@ -4,10 +4,67 @@ import essentia
 import essentia.standard as es
 import numpy as np
 
-from BeatNet.BeatNet import BeatNet
 
-from app.api.schemas import BeatNetResult
+def extract_chords(audio):
+    # 1. Загружаем аудио
+    sample_rate = 44100
 
+    # 2. Настройки фреймов (важно: frameSize = 2 * hopSize для ChordsDetection)
+    frame_size = 4096
+    hop_size = 2048
+
+    window = es.Windowing(type="blackmanharris62")
+    spectrum = es.Spectrum()
+
+    spectral_peaks = es.SpectralPeaks(
+        orderBy="magnitude",
+        magnitudeThreshold=0.00001,
+        minFrequency=20,
+        maxFrequency=3500,
+        maxPeaks=60,
+    )
+
+    hpcp = es.HPCP(
+        size=36,  # можно 12, 24, 36...
+        referenceFrequency=440,
+        minFrequency=20,
+        maxFrequency=3500,
+    )
+
+    pool = essentia.Pool()
+
+    # 3. Генерируем HPCP-кадры
+    for frame in es.FrameGenerator(
+        audio,
+        frameSize=frame_size,
+        hopSize=hop_size,
+        startFromZero=True,
+        validFrameThresholdRatio=0.5,
+    ):
+        spec = spectrum(window(frame))
+        freqs, mags = spectral_peaks(spec)  # <-- два выхода
+        hpcp_vec = hpcp(freqs, mags)  # <-- два аргумента
+        pool.add("tonal.hpcp", hpcp_vec)
+
+    # 4. Детектируем аккорды по HPCP-матрице
+    chords_detection = es.ChordsDetection(
+        hopSize=hop_size,
+        windowSize=2.0,  # окно (в секундах) для сглаживания по времени
+    )
+
+    chords, strength = chords_detection(pool["tonal.hpcp"])
+
+    # 5. Посчитаем примерные таймкоды для каждого аккорда
+    # один аккорд на кадр HPCP
+    times = [i * hop_size / float(sample_rate) for i in range(len(chords))]
+
+    # Вернем список сегментов (time, chord, strength)
+    result = [
+        {"timeSec": t, "chord": ch, "strength": float(st)}
+        for t, ch, st in zip(times, chords, strength)
+    ]
+
+    return result
 
 def analyze_audio(
     filepath: str,
@@ -54,6 +111,7 @@ def analyze_audio(
         essentia.array([pool["odf.complex"]]),  # матрица ODF (1 x N)
         [1.0],  # веса (одна ODF → вес 1)
     )
+    chords = extract_chords(audio)
 
     return {
         "bpm": float(bpm),
@@ -61,59 +119,5 @@ def analyze_audio(
         "key": str(key),  # например 'G'
         "scale": str(scale),  # 'major' / 'minor'
         "onsetsSec": [float(t) for t in onset_times],  # таймкоды онсетов, с
+        "chords": chords,
     }
-
-
-def analyze_with_beatnet_offline(path: str) -> BeatNetResult:
-    """
-    Оффлайн-анализ трека BeatNet'ом + построение сетки для метронома.
-    """
-
-    # модель 1, offline, не рисуем графики
-    estimator = BeatNet(
-        model=1,
-        mode="offline",
-        inference_model="DBN",  # для offline автор рекомендует DBN
-        plot=[],
-        thread=False,
-        device="cpu",  # либо "cuda", если есть
-    )
-
-    # Output: numpy_array(num_beats, 2) → [time, downbeat_flag]
-    output = estimator.process(path)
-    # output.shape: (N, 2)
-
-    beat_times = output[:, 0].astype(float).tolist()
-    downbeat_times = output[output[:, 1] == 1][:, 0].astype(float).tolist()
-
-    # Оценка BPM по интервалам между битами
-    if len(beat_times) > 2:
-        intervals = np.diff(beat_times)
-        # фильтруем слишком мелкие / большие интервалы, если хочешь
-        intervals = intervals[(intervals > 0.1) & (intervals < 1.5)]
-        if len(intervals) > 0:
-            median_period = float(np.median(intervals))
-            bpm = 60.0 / median_period
-        else:
-            bpm = 0.0
-    else:
-        bpm = 0.0
-
-    # Ровная сетка для метронома
-    metronome_grid: List[float] = []
-    if bpm > 0 and beat_times:
-        period = 60.0 / bpm
-        first_beat = beat_times[0]
-        last_time = beat_times[-1] + 4 * period
-
-        t = first_beat
-        while t < last_time:
-            metronome_grid.append(t)
-            t += period
-
-    return BeatNetResult(
-        bpm=bpm,
-        beatTimes=beat_times,
-        downbeatTimes=downbeat_times,
-        metronomeGrid=metronome_grid,
-    )

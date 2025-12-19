@@ -25,6 +25,12 @@ settings = get_settings()
 router = APIRouter()
 
 
+class Chord(BaseModel):
+    timeSec: Optional[str] = None
+    chord: Optional[str] = None
+    strength: Optional[float] = None
+
+
 class AudioAnalysisResult(BaseModel):
     bpm: Optional[float] = Field(None, description="Оцененный темп трека в BPM")
     beats: List[float] = Field(None, description="Таймкоды битов в секундах")
@@ -34,8 +40,7 @@ class AudioAnalysisResult(BaseModel):
         None,
         description="Таймкоды онсетов (атак) в секундах",
     )
-
-    beatN: Optional[BeatNetResult] = None
+    chords: Optional[List[Chord]] = None
 
 
 @router.post(
@@ -58,9 +63,7 @@ async def analyze_record(
 
     try:
         data = analyze_audio(record_path, onset_type=onsetType)
-        bn = analyze_with_beatnet_offline(record_path)
-        result =  AudioAnalysisResult(**data)
-        result.beatN = bn
+        result = AudioAnalysisResult(**data)
         return result
     except Exception:
         raise HTTPException(status_code=500, detail="Audio analysis failed")

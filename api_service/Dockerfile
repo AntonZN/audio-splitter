@@ -11,13 +11,4 @@ RUN apt-get update && \
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
-
-RUN apt-get install -y  portaudio19-dev
-
-RUN pip install madmom
-RUN pip install BeatNet
-RUN apt-get install -y git
-RUN pip install git+https://github.com/CPJKU/madmom
-RUN pip install librosa
-RUn pip install pyaudio
 COPY . /app
