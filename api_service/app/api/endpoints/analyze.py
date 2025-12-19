@@ -17,9 +17,6 @@ from typing import List
 from app.api.analyze_fn import analyze_audio
 from app.core.config import get_settings
 
-from app.api.schemas import BeatNetResult
-
-from app.api.analyze_fn import analyze_with_beatnet_offline
 
 settings = get_settings()
 router = APIRouter()
