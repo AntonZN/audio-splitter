@@ -124,8 +124,8 @@ async def separate_record_subprocess(record_id: str, codec: str, count_stems: in
                     (arrow.utcnow().datetime - record.created_at).total_seconds()
                 )
                 await client.post(
-                    f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/?token={settings.RVC_TOKEN}",
-                    params={"seconds": waiting_time_in_seconds},
+                    f"https://rvc.vocalremove.online/api/v1/studio/statistics/old_split/avg/",
+                    params={"seconds": waiting_time_in_seconds, "token": settings.RVC_TOKEN},
                 )
         except:
             pass
